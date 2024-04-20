@@ -1,4 +1,4 @@
-const DeviceManager = require("../models/deviceManager");
+const DeviceManager = require("../repository/deviceManager");
 const PossibleTypes = require("../models/possibleType");
 
 const deviceManager = new DeviceManager();

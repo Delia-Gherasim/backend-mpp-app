@@ -1,4 +1,4 @@
-const DeviceManager = require("../models/deviceManager");
+const DeviceManager = require("../repository/deviceManager");
 
 const devices = new DeviceManager().getAllDevices();
 module.exports = {

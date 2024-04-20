@@ -1,12 +1,14 @@
-const DeviceManager = require("../models/deviceManager");
-const PossibleTypes = require("../models/possibleType");
+const DeviceManager = require("../repository/deviceManager");
+const deviceManager = new DeviceManager();
+const controller = require("../controllers/crudController");
 
-const devices = new DeviceManager().getAllDevices();
 module.exports = {
-  totalNumberOfitems: function () {
+  totalNumberOfItems: function () {
+    const devices = controller.getAll();
     return devices.length;
   },
   getPagesOfNItems: function (numberOfItems, pageNumber) {
+    const devices = controller.getAll();
     const startIndex = (pageNumber - 1) * numberOfItems;
     const endIndex = pageNumber * numberOfItems;
     const totalPages = Math.ceil(devices.length / numberOfItems);
@@ -22,6 +24,15 @@ module.exports = {
     };
   },
   getAllItems: function () {
-    return devices.getAllDevices();
+    return controller.getAll();
+  },
+
+  updatePaginationData: function () {
+    const totalItems = this.totalNumberOfItems();
+    const totalPages = Math.ceil(totalItems / 10);
+    return {
+      totalItems: totalItems,
+      totalPages: totalPages,
+    };
   },
 };
