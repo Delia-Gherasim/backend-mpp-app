@@ -40,7 +40,7 @@ module.exports = {
 
   addDevice: async function (device) {
     try {
-      await this.validateData(device); // Validate data
+      await this.validateData(device);
       const addedDevice = await deviceManager.addDevice(device); 
       return addedDevice;
     } catch (error) {

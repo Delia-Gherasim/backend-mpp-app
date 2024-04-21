@@ -3,54 +3,54 @@ const express = require("express");
 const sinon = require("sinon");
 const app = express();
 const router = require("./crud.js");
-const controller = require("../controllers/crudController.js");
+const controller = require("../controllers/clientsController.js");
 import { describe, expect, it } from "vitest";
-const Device = require("../models/device");
+import Client from "../models/client.js";
+
 
 app.use("/", router);
 
 function toMatchSnapshot(actual, expected) {
-  //expect(actual.status).toEqual(200);
+  expect(actual.status).toEqual(200);
  // expect(actual.body).toEqual(expected);
  expect(actual.body.id).toEqual(expected.id);
- expect(actual.body.category).toEqual(expected.category);
- expect(actual.body.type).toEqual(expected.type);
- expect(actual.body.brand).toEqual(expected.brand);
- expect(actual.body.owner).toEqual(expected.owner);
- expect(actual.body.accessories).toEqual(expected.accessories);
- expect(actual.body.warranty).toEqual(expected.warranty);
+ expect(actual.body.name).toEqual(expected.name);
+ expect(actual.body.surname).toEqual(expected.surname);
+ expect(actual.body.email).toEqual(expected.email);
+ expect(actual.body.phoneNumber).toEqual(expected.phoneNumber);
+ expect(actual.body.debt).toEqual(expected.debt);
+ expect(actual.body.details).toEqual(expected.details);
 }
 
-describe("Crud Routes", () => {
+describe("Client Routes", () => {
   it('should match snapshot for "/" route', async () => {
     const response = await request(app).get("/");
     toMatchSnapshot(response, controller.getAll());
   });
 
   it("should match snapshot for / route with method post", async () => {
-    const newItem = new Device({
-      id: 1111111,
-      category: "electronics",
-      type: "Smartphone",
-      brand: "Samsung",
-      owner: "test",
-      accessories: true,
-      warranty: true,
-      date: new Date().toDateString(),
-    });
-
-    const expectedResponse = await controller.addDevice(newItem);
+    const newItem = new Client({
+        id:1111,
+        name:"name",
+        surname:"surname",
+        phoneNumber:"0123456789",
+        email:"email@gmail.com",
+        debt: 100,
+        details:"extra details wow",
+    })
+    
+    const expectedResponse =await controller.addClient(newItem);
     const response = await request(app).post("/").send(newItem);
 
     toMatchSnapshot(response, expectedResponse);
   });
   it("should match snapshot for /:id route with method get", async () => {
-    const expectedResponse = await controller.getDeviceById(1998813940154368);
-    const response = await request(app).get("/1998813940154368");
+    const expectedResponse = await controller.getClientById(761420374943296);
+    const response = await request(app).get("/761420374943296");
     toMatchSnapshot(response, expectedResponse);
   });
   it("should match snapshot for /:id route with method delete", async()=>{
-    const expectedResponse = await controller.deleteDeviceById(3);
+    const expectedResponse = await controller.deleteClientById(3);
     const response = await request(app).delete("/3");
     toMatchSnapshot(response, expectedResponse);
   })

@@ -12,10 +12,10 @@ class ClientManager {
         throw new Error("No data received from collection.find");
       }
 
-     // console.log("Clients fetched:", clients); // Debugging to verify data
+     // console.log("Clients fetched:", clients); 
       const transformedClients = this.transformToClientArray(clients);
 
-     // console.log("Transformed clients:", transformedClients); // Validate transformation
+     // console.log("Transformed clients:", transformedClients); 
 
       return transformedClients;
     } catch (error) {
@@ -23,6 +23,25 @@ class ClientManager {
       throw error; 
     }
   }
+  async getClientById(id) {
+    if (!ObjectId.isValid(id)) {
+      throw new Error("Invalid ID format.");
+    }
+
+    try {
+      const clientData = await this.collection.findOne({ id: id });
+      if (!clientData) {
+        throw new Error("Client not found.");
+      }
+
+      const { name, surname, phoneNumber, email, debt, extraDetails } = clientData;
+      return new Client(id, name, surname, phoneNumber, email, debt, extraDetails);
+    } catch (error) {
+      console.error("Error in getClientById:", error);
+      throw new Error("Failed to fetch client: " + error.message);
+    }
+  }
+
 
   transformToClientArray(rawData) {
     if (!Array.isArray(rawData)) {

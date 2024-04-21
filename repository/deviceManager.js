@@ -12,15 +12,14 @@ class DeviceManager {
         throw new Error("No data received from collection.find");
       }
 
-     // console.log("Devices fetched:", devices); // Debugging to verify data
+      // console.log("Devices fetched:", devices);
       const transformedDevices = this.transformToDeviceArray(devices);
 
-     // console.log("Transformed devices:", transformedDevices); // Validate transformation
-
+      // console.log("Transformed devices:", transformedDevices);
       return transformedDevices;
     } catch (error) {
       console.error("Error in getAllDevices:", error);
-      throw error; 
+      throw error;
     }
   }
 
@@ -76,6 +75,35 @@ class DeviceManager {
       }
     }
   }
+  async getDeviceById(id) {
+    if (!ObjectId.isValid(id)) {
+      throw new Error("Invalid ID format.");
+    }
+
+    try {
+      const deviceData = await this.collection.findOne({ id: id });
+
+      if (!deviceData) {
+        throw new Error("Device not found.");
+      }
+      const { category, type, brand, owner, accessories, warranty, date } =
+        deviceData;
+      return new Device(
+        id,
+        category,
+        type,
+        brand,
+        owner,
+        accessories,
+        warranty,
+        date
+      );
+    } catch (error) {
+      console.error("Error in getDeviceById:", error);
+      throw new Error("Failed to fetch device: " + error.message);
+    }
+  }
+
   async deleteDeviceById(id) {
     const result = await this.collection.deleteOne({ id: id });
     if (result.deletedCount === 1) {
@@ -86,10 +114,10 @@ class DeviceManager {
   async updateDevice(updatedDevice) {
     try {
       console.log("Updating device with data:", updatedDevice);
-      const filter = { id: updatedDevice.id }; 
-  
+      const filter = { id: updatedDevice.id };
+
       const replacement = {
-        id: updatedDevice.id, 
+        id: updatedDevice.id,
         category: updatedDevice.category,
         type: updatedDevice.type,
         brand: updatedDevice.brand,
@@ -98,22 +126,20 @@ class DeviceManager {
         warranty: updatedDevice.warranty,
         date: updatedDevice.date,
       };
-  
+
       const result = await this.collection.replaceOne(filter, replacement);
       console.log("ReplaceOne result:", result);
-  
-      if (result.matchedCount === 1) { 
-        return "Device updated successfully"; 
+
+      if (result.matchedCount === 1) {
+        return "Device updated successfully";
       } else {
-        return "Device not found"; 
+        return "Device not found";
       }
     } catch (error) {
-      console.error("Error updating device:", error); 
-      throw new Error("Error updating device: " + error.message); 
+      console.error("Error updating device:", error);
+      throw new Error("Error updating device: " + error.message);
     }
   }
-  
 }
-
 
 module.exports = DeviceManager;
