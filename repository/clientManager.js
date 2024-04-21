@@ -1,26 +1,118 @@
-
-const { MongoClient, ServerApiVersion } = require('mongodb');
-const uri = "mongodb+srv://gherasimdelia12:3-uCXZ6wz_ZXWGM@cluster0.tsn9oz7.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
-
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
+const Client = require("../models/client");
+const { ObjectId } = require("mongodb");
+const client = require("../mongoClient");
+class ClientManager {
+  constructor() {
+    this.collection = client.db("mpp").collection("clients");
   }
-});
+  async getAllClients() {
+    try {
+      const clients = await this.collection.find({}).toArray();
+      if (!clients) {
+        throw new Error("No data received from collection.find");
+      }
 
-async function run() {
-  try {
-    // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
-    // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
-  } finally {
-    // Ensures that the client will close when you finish/error
-    await client.close();
+     // console.log("Clients fetched:", clients); // Debugging to verify data
+      const transformedClients = this.transformToClientArray(clients);
+
+     // console.log("Transformed clients:", transformedClients); // Validate transformation
+
+      return transformedClients;
+    } catch (error) {
+      console.error("Error in getAllClients:", error);
+      throw error; 
+    }
   }
+
+  transformToClientArray(rawData) {
+    if (!Array.isArray(rawData)) {
+      //console.error("transformToClientArray received non-array input:", rawData);
+      throw new Error("Input data must be an array.");
+    }
+
+    const clientArray = rawData.map((clientData) => {
+      const { id, name,surname, phoneNumber, email, debt, extraDetails } =
+        clientData;
+      return new Client(
+        id,
+        name,
+        surname,
+        phoneNumber,
+        email,
+        debt,
+        extraDetails
+      );
+    });
+    return clientArray;
+  }
+  async getNewId() {
+    const lastClient = await this.collection.findOne({}, { sort: { _id: -1 } });
+    if (lastClient) {
+      return lastClient._id + 1;
+    } else {
+      return 1;
+    }
+  }
+  async checkExistence(item) {
+    return await this.collection.findOne({
+      name: item.name,
+      surname: item.surname,
+      phoneNumber: item.phoneNumber,
+      email: item.email,
+    });
+  }
+  async addClient(newClient) {
+    try {
+      await this.collection.insertOne(newClient);
+      return newClient;
+    } catch (error) {
+      if (error.code === 11000) {
+        console.log("Duplicate key error. Generating a new _id value.");
+        newClient._id = new ObjectId();
+        return await this.addClient(newClient);
+      } else {
+        throw error;
+      }
+    }
+  }
+  async deleteClientById(id) {
+    const result = await this.collection.deleteOne({ id: id });
+    if (result.deletedCount === 1) {
+      return "Client deleted successfully";
+    }
+    return "Client not found";
+  }
+  async updateClient(updatedClient) {
+    try {
+      console.log("Updating client with data:", updatedClient);
+      const filter = { id: updatedClient.id }; 
+  
+      const replacement = {
+        id: updatedClient.id, 
+        name: updatedClient.name,
+        surname: updatedClient.surname,
+        phoneNumber: updatedClient.phoneNumber,
+        email: updatedClient.email,
+        debt: updatedClient.debt,
+        extraDetails: updatedClient.extraDetails,
+      };
+  
+      const result = await this.collection.replaceOne(filter, replacement);
+      console.log("ReplaceOne result:", result);
+  
+      if (result.matchedCount === 1) { 
+        return "Client updated successfully"; 
+      } else {
+        return "Client not found"; 
+      }
+    } catch (error) {
+      console.error("Error updating client:", error); 
+      throw new Error("Error updating client: " + error.message); 
+    }
+  }
+  
 }
-run().catch(console.dir);
+
+
+module.exports = ClientManager;
+

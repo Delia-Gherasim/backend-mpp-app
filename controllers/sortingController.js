@@ -1,71 +1,73 @@
 const DeviceManager = require("../repository/deviceManager");
 
-const devices = new DeviceManager().getAllDevices();
 module.exports = {
-  sortByTypeAscending: function () {
-    const sortedArray = devices.slice();
-    sortedArray.sort((a, b) => {
-      if (a.type < b.type) {
-        return -1;
-      } else if (a.type > b.type) {
-        return 1;
-      } else {
-        return 0;
-      }
-    });
-    return sortedArray;
+  getDevices: async () => {
+    const devices = await new DeviceManager().getAllDevices();
+    return devices;
   },
-  sortByCategoryAscending: function () {
-    const sortedArray = devices.slice();
-    sortedArray.sort((a, b) => {
-      if (a.category < b.category) {
-        return -1;
-      } else if (a.category > b.category) {
-        return 1;
-      } else {
-        return 0;
+  sortByTypeAscending: async function () {
+    try {
+      const devices = await this.getDevices();
+      if (!Array.isArray(devices)) {
+        throw new Error("Devices data is not an array");
       }
-    });
-    return sortedArray;
+      const sortedArray = devices.slice();
+      sortedArray.sort((a, b) => a.type.localeCompare(b.type));
+      return sortedArray;
+    } catch (error) {
+      throw new Error("Error sorting by type: " + error.message);
+    }
   },
-  sortByBrandAscending: function () {
-    const sortedArray = devices.slice();
-    sortedArray.sort((a, b) => {
-      if (a.brand < b.brand) {
-        return -1;
-      } else if (a.brand > b.brand) {
-        return 1;
-      } else {
-        return 0;
+  sortByCategoryAscending: async function () {
+    try {
+      const devices = await this.getDevices();
+      if (!Array.isArray(devices)) {
+        throw new Error("Devices data is not an array");
       }
-    });
-    return sortedArray;
+      const sortedArray = devices.slice();
+      sortedArray.sort((a, b) => a.category.localeCompare(b.category));
+      return sortedArray;
+    } catch (error) {
+      throw new Error("Error sorting by category: " + error.message);
+    }
   },
-  sortByOwnerAscending: function () {
-    const sortedArray = devices.slice();
-    sortedArray.sort((a, b) => {
-      if (a.owner < b.owner) {
-        return -1;
-      } else if (a.owner > b.owner) {
-        return 1;
-      } else {
-        return 0;
+  sortByBrandAscending: async function () {
+    try {
+      const devices = await this.getDevices();
+      if (!Array.isArray(devices)) {
+        throw new Error("Devices data is not an array");
       }
-    });
-    return sortedArray;
+      const sortedArray = devices.slice();
+      sortedArray.sort((a, b) => a.brand.localeCompare(b.brand));
+      return sortedArray;
+    } catch (error) {
+      throw new Error("Error sorting by brand: " + error.message);
+    }
   },
-
-  sortByDateAscending: function () {
-    const sortedArray = devices.slice();
-    sortedArray.sort((a, b) => {
-      if (a.date.getDate() < b.date.getDate()) {
-        return -1;
-      } else if (a.date.getDate() > b.date.getDate()) {
-        return 1;
-      } else {
-        return 0;
+  sortByOwnerAscending: async function () {
+    try {
+      const devices = await this.getDevices();
+      if (!Array.isArray(devices)) {
+        throw new Error("Devices data is not an array");
       }
-    });
-    return sortedArray;
+      const sortedArray = devices.slice();
+      sortedArray.sort((a, b) => a.owner.localeCompare(b.owner));
+      return sortedArray;
+    } catch (error) {
+      throw new Error("Error sorting by owner: " + error.message);
+    }
+  },
+  sortByDateAscending: async function () {
+    try {
+      const devices = await this.getDevices();
+      if (!Array.isArray(devices)) {
+        throw new Error("Devices data is not an array");
+      }
+      const sortedArray = devices.slice();
+      sortedArray.sort((a, b) => a.date - b.date);
+      return sortedArray;
+    } catch (error) {
+      throw new Error("Error sorting by date: " + error.message);
+    }
   },
 };

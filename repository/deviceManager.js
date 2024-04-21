@@ -1,301 +1,119 @@
-const Device = require ("../models/device");
-
+const Device = require("../models/device");
+const { ObjectId } = require("mongodb");
+const client = require("../mongoClient");
 class DeviceManager {
   constructor() {
-    this.devices = [
-      new Device(
-        1,
-        "electronics",
-        "Smartphone",
-        "Samsung",
-        "John Doe",
-        true,
-        true,
-        new Date("2022-03-31")
-      ),
-      new Device(
-        2,
-        "electronics",
-        "Laptop",
-        "Apple",
-        "John Doe",
-        false,
-        false,
-        new Date("2022-04-01")
-      ),
-      new Device(
-        3,
-        "electronics",
-        "Tablet",
-        "Google",
-        "John Doe",
-        true,
-        true,
-        new Date("2022-04-02")
-      ),
-      new Device(
-        4,
-        "electronics",
-        "Smartwatch",
-        "Fitbit",
-        "Emily Brown",
-        true,
-        true,
-        new Date("2022-04-03")
-      ),
-      new Device(
-        5,
-        "electronics",
-        "Computer",
-        "Dell",
-        "Michael Davis",
-        true,
-        false,
-        new Date("2022-04-04")
-      ),
-      new Device(
-        6,
-        "electronics",
-        "Tv",
-        "LG",
-        "Sarah Wilson",
-        false,
-        true,
-        new Date("2022-04-05")
-      ),
-      new Device(
-        7,
-        "electronics",
-        "Camera",
-        "Nikon",
-        "David Martinez",
-        true,
-        true,
-        new Date("2022-04-06")
-      ),
-      new Device(
-        8,
-        "electronics",
-        "Gaming Console",
-        "Sony",
-        "Jessica Lee",
-        true,
-        false,
-        new Date("2022-04-07")
-      ),
-      new Device(
-        9,
-        "electronics",
-        "Headphones",
-        "Bose",
-        "Chris Taylor",
-        false,
-        true,
-        new Date("2022-04-08")
-      ),
-      new Device(
-        10,
-        "electronics",
-        "Fitness Tracker",
-        "Garmin",
-        "Emma Anderson",
-        true,
-        true,
-        new Date("2022-04-09")
-      ),
-      new Device(
-        11,
-        "electronics",
-        "Portable Speaker",
-        "JBL",
-        "Daniel Clark",
-        false,
-        false,
-        new Date("2022-04-10")
-      ),
-      new Device(
-        12,
-        "electronics",
-        "E-reader",
-        "Amazon",
-        "Olivia White",
-        true,
-        true,
-        new Date("2022-04-11")
-      ),
-      new Device(
-        13,
-        "electronics",
-        "Smart Home Hub",
-        "Google",
-        "William Turner",
-        true,
-        true,
-        new Date("2022-04-12")
-      ),
-      new Device(
-        14,
-        "electronics",
-        "VR Headset",
-        "Oculus",
-        "Sophia Garcia",
-        false,
-        true,
-        new Date("2022-04-13")
-      ),
-      new Device(
-        15,
-        "electronics",
-        "Router",
-        "Linksys",
-        "Ethan Moore",
-        true,
-        false,
-        new Date("2022-04-14")
-      ),
-      new Device(
-        16,
-        "appliances",
-        "Smart Thermostat",
-        "Ecobee",
-        "Mia Wilson",
-        false,
-        true,
-        new Date("2022-04-15")
-      ),
-      new Device(
-        17,
-        "electronics",
-        "Drone",
-        "DJI",
-        "Noah Thomas",
-        true,
-        true,
-        new Date("2022-04-16")
-      ),
-      new Device(
-        18,
-        "appliances",
-        "Smart Lock",
-        "August",
-        "Ava Johnson",
-        false,
-        false,
-        new Date("2022-04-17")
-      ),
-      new Device(
-        19,
-        "electronics",
-        "Camera",
-        "Sony",
-        "Liam Rodriguez",
-        true,
-        true,
-        new Date("2022-04-18")
-      ),
-      new Device(
-        20,
-        "electronics",
-        "Wireless Earbuds",
-        "Apple",
-        "Harper Martinez",
-        false,
-        true,
-        new Date("2022-04-19")
-      ),
-      new Device(
-        21,
-        "electronics",
-        "Digital Voice Assistant",
-        "Amazon",
-        "Evelyn Brown",
-        true,
-        false,
-        new Date("2022-04-20")
-      ),
-      new Device(
-        22,
-        "electronics",
-        "Tv",
-        "LG",
-        "Lucas Anderson",
-        true,
-        true,
-        new Date("2022-04-21")
-      ),
-      new Device(
-        23,
-        "electronics",
-        "Camera",
-        "GoPro",
-        "Aiden Taylor",
-        false,
-        false,
-        new Date("2022-04-22")
-      ),
-      new Device(
-        24,
-        "appliances",
-        "Vacuum",
-        "Dyson",
-        "Mila Moore",
-        true,
-        true,
-        new Date("2022-04-23")
-      ),
-    ];
+    this.collection = client.db("mpp").collection("devices");
   }
-  getNewId() {
-    const lastElement = this.devices[this.devices.length - 1];
-    return lastElement.getId() + 1;
-  }
-  getAllDevices() {
-    return this.devices;
-  }
-  checkExistence(item) {
-    return this.devices.find(
-      (device) =>
-        device.date === item.date &&
-        device.category === item.category &&
-        device.brand === item.brand &&
-        device.type === item.type &&
-        device.accessories === item.accessories &&
-        device.warranty === item.warranty
-    );
-  }
-  addDevice(newDevice) {
-    const existingDevice = this.checkExistence(newDevice);
-    if (existingDevice) {
-      throw "Device already exists";
+  async getAllDevices() {
+    try {
+      const devices = await this.collection.find({}).toArray();
+      if (!devices) {
+        throw new Error("No data received from collection.find");
+      }
+
+     // console.log("Devices fetched:", devices); // Debugging to verify data
+      const transformedDevices = this.transformToDeviceArray(devices);
+
+     // console.log("Transformed devices:", transformedDevices); // Validate transformation
+
+      return transformedDevices;
+    } catch (error) {
+      console.error("Error in getAllDevices:", error);
+      throw error; 
     }
-    newDevice.setId(this.getNewId());
-    this.devices.push(newDevice);
-    return newDevice;
   }
 
-  deleteDeviceById(id) {
-    const existingDevice = this.getDeviceById(id);
-    if (!existingDevice) {
-      return "Device doesn't exist";
+  transformToDeviceArray(rawData) {
+    if (!Array.isArray(rawData)) {
+      //console.error("transformToDeviceArray received non-array input:", rawData);
+      throw new Error("Input data must be an array.");
     }
-    this.devices = this.devices.filter((item) => item.id !== id);
-    return "All ok";
-  }
-  updateDevice(newDevice) {
-    let index = this.devices.findIndex((item) => item.id == newDevice.id);
-    if (index !== -1) {
-      this.devices[index] = newDevice;
-      return "All ok";
-    }
-    return "Device doesn't exist";
-  }
 
-  getDeviceById(id) {
-    let index = this.devices.findIndex((item) => item.id == id);
-    if (index !== -1) {
-      return this.devices[index];
+    const deviceArray = rawData.map((deviceData) => {
+      const { id, category, type, brand, owner, accessories, warranty, date } =
+        deviceData;
+      return new Device(
+        id,
+        category,
+        type,
+        brand,
+        owner,
+        accessories,
+        warranty,
+        date
+      );
+    });
+    return deviceArray;
+  }
+  async getNewId() {
+    const lastDevice = await this.collection.findOne({}, { sort: { _id: -1 } });
+    if (lastDevice) {
+      return lastDevice._id + 1;
+    } else {
+      return 1;
     }
   }
+  async checkExistence(item) {
+    return await this.collection.findOne({
+      name: item.name,
+      surname: item.surname,
+      phoneNumber: item.phoneNumber,
+      email: item.email,
+    });
+  }
+  async addDevice(newDevice) {
+    try {
+      await this.collection.insertOne(newDevice);
+      return newDevice;
+    } catch (error) {
+      if (error.code === 11000) {
+        console.log("Duplicate key error. Generating a new _id value.");
+        newDevice._id = new ObjectId();
+        return await this.addClient(newDevice);
+      } else {
+        throw error;
+      }
+    }
+  }
+  async deleteDeviceById(id) {
+    const result = await this.collection.deleteOne({ id: id });
+    if (result.deletedCount === 1) {
+      return "Device deleted successfully";
+    }
+    return "Device not found";
+  }
+  async updateDevice(updatedDevice) {
+    try {
+      console.log("Updating device with data:", updatedDevice);
+      const filter = { id: updatedDevice.id }; 
+  
+      const replacement = {
+        id: updatedDevice.id, 
+        category: updatedDevice.category,
+        type: updatedDevice.type,
+        brand: updatedDevice.brand,
+        owner: updatedDevice.owner,
+        accessories: updatedDevice.accessories,
+        warranty: updatedDevice.warranty,
+        date: updatedDevice.date,
+      };
+  
+      const result = await this.collection.replaceOne(filter, replacement);
+      console.log("ReplaceOne result:", result);
+  
+      if (result.matchedCount === 1) { 
+        return "Device updated successfully"; 
+      } else {
+        return "Device not found"; 
+      }
+    } catch (error) {
+      console.error("Error updating device:", error); 
+      throw new Error("Error updating device: " + error.message); 
+    }
+  }
+  
 }
+
 
 module.exports = DeviceManager;

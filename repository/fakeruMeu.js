@@ -1,8 +1,10 @@
 const PossibleBrands = require("../models/possibleBrands");
 const PossibleTypes = require("../models/possibleType");
 const Device = require("../models/device");
-const { fakerEN_US } = require("@faker-js/faker");
+const Client = require("../models/client");
+const { fakerEN_US, faker, th } = require("@faker-js/faker");
 const Controller = require("../controllers/crudController");
+const clientController = require("../controllers/clientsController");
 
 const possibleTypes = new PossibleTypes();
 const possibleBrands = new PossibleBrands();
@@ -33,14 +35,36 @@ module.exports = {
       randomDate
     );
   },
+  generateClient: function () {
+    let id=fakerEN_US.number.bigInt();
+    let name = fakerEN_US.person.firstName();
+    let surname = fakerEN_US.person.lastName();
+    let phoneNumber = faker.number
+      .int({ min: 1000000000, max: 9999999999 })
+      .toString();
+    let email = fakerEN_US.internet.email;
+    let details = fakerEN_US.lorem.sentence();
+    let debt = fakerEN_US.number.int();
+
+    return new Client(id, name, surname, phoneNumber, email, debt, details);
+  },
   startGeneratingDevices: function (callback) {
     setInterval(() => {
       const newDevice1 = this.generateDevice();
       const newDevice2 = this.generateDevice();
       const newDevice3 = this.generateDevice();
-      Controller.addDevice(newDevice1);
-      Controller.addDevice(newDevice2);
-      Controller.addDevice(newDevice3);
+      const newClient1 = this.generateClient();
+      const newClient2 = this.generateClient();
+      const newClient3 = this.generateClient();
+      try {
+        Controller.addDevice(newDevice1);
+        Controller.addDevice(newDevice2);
+        Controller.addDevice(newDevice3);
+
+        clientController.addClient(newClient1);
+        clientController.addClient(newClient2);
+        clientController.addClient(newClient3);
+      } catch (Error) {}
       callback([newDevice1, newDevice2, newDevice3]);
     }, 50000);
   },

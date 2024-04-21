@@ -26,9 +26,13 @@ app.use("/types", typesRouter);
 const brandsRouter = require("./routes/brands");
 app.use("/brands", brandsRouter);
 
+const clientRouter=require("./routes/client");
+app.use("/client", clientRouter);
+
 app.get("/", (req, res) => {
   res.send("Hello from the backend server!");
 });
+
 
 const wss = new WebSocket.Server({ server: app.listen(port, () => {
   faker.startGeneratingDevices((newData) => {
@@ -40,5 +44,7 @@ const wss = new WebSocket.Server({ server: app.listen(port, () => {
   });
   console.log(`Server is running on http://localhost:${port}`);
 })});
+
+
 
 module.exports = app;

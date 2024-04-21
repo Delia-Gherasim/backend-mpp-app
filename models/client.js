@@ -2,54 +2,53 @@ class Client {
   constructor(id, name, surname, phoneNumber, email, debt, details) {
     this.id = id;
     this.name = name;
-    this.surname=surname;
-    this.phoneNumber=phoneNumber;
-    this.email=email;
-    this.debt=debt;
-    this.extraDetails=details;
+    this.surname = surname;
+    this.phoneNumber = phoneNumber;
+    this.email = email;
+    this.debt = debt;
+    this.extraDetails = details;
   }
-  getId(){
+  getId() {
     return this.id;
   }
-  getName(){
+  getName() {
     return this.name;
   }
-  getSurname(){
+  getSurname() {
     return this.surname;
   }
-  getPhoneNumer(){
+  getPhoneNumer() {
     return this.phoneNumber;
   }
-  getEmail(){
+  getEmail() {
     return this.email;
   }
-  getDebt(){
+  getDebt() {
     return this.debt;
   }
-  getDetails(){
+  getDetails() {
     return this.extraDetails;
   }
-  setId(newId){
-    this.id=newId;
+  setId(newId) {
+    this.id = newId;
   }
-  setName(newName){
-    this.name=newName;
+  setName(newName) {
+    this.name = newName;
   }
-  setSurname(newSurname){
-    this.surname=this.newSurname;
+  setSurname(newSurname) {
+    this.surname = this.newSurname;
   }
-  setPhoneNumer(newPhoneNumber){
-    this.phoneNumber=newPhoneNumber;
+  setPhoneNumer(newPhoneNumber) {
+    this.phoneNumber = newPhoneNumber;
   }
-  setEmail(newEmail){
-    this.email=newEmail;
+  setEmail(newEmail) {
+    this.email = newEmail;
   }
-  setDebt(newSUm){
-    this.debt=newSUm;
+  setDebt(newSUm) {
+    this.debt = newSUm;
   }
-  setDetails(newDetails){
-    this.details=newDetails;
+  setDetails(newDetails) {
+    this.details = newDetails;
   }
-
 }
-module.exports=Client;
+module.exports = Client;

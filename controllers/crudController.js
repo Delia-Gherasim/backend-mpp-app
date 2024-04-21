@@ -10,27 +10,53 @@ const types = typesManager.getAllTypes();
 const deviceManager = new DeviceManager();
 
 module.exports = {
-  getAll: function () {
-    const devices = deviceManager.getAllDevices();
-    return devices;
+  getAll: async function () {
+    try {
+      const devices = await deviceManager.getAllDevices(); 
+      return devices;
+    } catch (error) {
+      throw new Error("Error fetching devices: " + error.message); 
+    }
   },
-  getDeviceById: function (id) {
-    const device = deviceManager.getDeviceById(id);
-    return device ? device : "Device not found";
+
+  getDeviceById: async function (id) {
+    try {
+      const device = await deviceManager.getDeviceById(id); 
+      return device ? device : "Device not found";
+    } catch (error) {
+      throw new Error("Error fetching device by ID: " + error.message); 
+    }
   },
-  updateDevice: function (device) {
-    this.validateData(device);
-    const updatedDevice = deviceManager.updateDevice(device);
-    return updatedDevice ? updatedDevice : "Device not found";
+
+  updateDevice: async function (device) {
+    try {
+      await this.validateData(device); 
+      const updatedDevice = await deviceManager.updateDevice(device); 
+      return updatedDevice ? updatedDevice : "Device not found";
+    } catch (error) {
+      throw new Error("Error updating device: " + error.message); 
+    }
   },
-  addDevice: function (device) {   
-    this.validateData(device);
-    return deviceManager.addDevice(device);
+
+  addDevice: async function (device) {
+    try {
+      await this.validateData(device); // Validate data
+      const addedDevice = await deviceManager.addDevice(device); 
+      return addedDevice;
+    } catch (error) {
+      throw new Error("Error adding device: " + error.message); 
+    }
   },
-  deleteDeviceById: function (id) {
-    const deletedDevice = deviceManager.deleteDeviceById(id);
-    return deletedDevice ? deletedDevice : "Device not found";
+
+  deleteDeviceById: async function (id) {
+    try {
+      const deletedDevice = await deviceManager.deleteDeviceById(id); 
+      return deletedDevice ? deletedDevice : "Device not found";
+    } catch (error) {
+      throw new Error("Error deleting device: " + error.message); 
+    }
   },
+
   validateData: function(device){
     console.log(device);
     if (device.getCategory().toLowerCase() !== "electronics" && device.getCategory().toLowerCase() !== "appliances" && device.getCategory().toLowerCase() !== "equipment")

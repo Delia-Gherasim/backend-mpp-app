@@ -1,20 +1,20 @@
 const DeviceManager = require("../repository/deviceManager");
 const PossibleTypes = require("../models/possibleType");
 
-const deviceManager = new DeviceManager();
-
 module.exports = {
-  percentagesOfEachCategory: function () {
-    const categories = {};
-    const totalDevices = deviceManager.getAllDevices().length;
+  getDevices: async () => {
+    const devices = await new DeviceManager().getAllDevices();
+    return devices;
+  },
 
-    deviceManager.getAllDevices().forEach((device) => {
-      const category = device.category;
-      if (!categories[category]) {
-        categories[category] = 1;
-      } else {
-        categories[category]++;
-      }
+  percentagesOfEachCategory: async function () {
+    const devices = await this.getDevices();
+    const categories = {};
+    const totalDevices = devices.length;
+
+    devices.forEach((device) => {
+      const category = device.category.toLowerCase();
+      categories[category] = (categories[category] || 0) + 1;
     });
 
     const percentages = Object.entries(categories).map(([category, count]) => ({
@@ -25,21 +25,16 @@ module.exports = {
     return percentages;
   },
 
-  percentagesOfEachTypeForACategory: function (category) {
-    const possibleTypes = new PossibleTypes();
-    const categoryDevices = deviceManager
-      .getAllDevices()
-      .filter((element) => element.category === category);
-    const typeCounts = {};
+  percentagesOfEachTypeForACategory: async function (category) {
+    const devices = await this.getDevices();
+    const categoryDevices = devices.filter(
+      (element) => element.category === category
+    );
 
+    const typeCounts = {};
     categoryDevices.forEach((device) => {
-      if (device.type) {
-        if (!typeCounts[device.type]) {
-          typeCounts[device.type] = 1;
-        } else {
-          typeCounts[device.type]++;
-        }
-      }
+      const type = device.type;
+      typeCounts[type] = (typeCounts[type] || 0) + 1;
     });
 
     const totalDevicesInCategory = categoryDevices.length;
@@ -52,46 +47,40 @@ module.exports = {
     return percentages;
   },
 
-  percentagesOfEachBrandForAType: function (category) {
-    const possibleTypes = new PossibleTypes();
-    const categoryDevices = deviceManager
-      .getAllDevices()
-      .filter((element) => element.category === category);
-    const typeCounts = {};
+  percentagesOfEachBrandForAType: async function (category) {
+    const devices = await this.getDevices();
+    const categoryDevices = devices.filter(
+      (element) => element.category === category
+    );
 
+    const brandCounts = {};
     categoryDevices.forEach((device) => {
-      if (device.brand) {
-        if (!typeCounts[device.brand]) {
-          typeCounts[device.brand] = 1;
-        } else {
-          typeCounts[device.brand]++;
-        }
-      }
+      const brand = device.brand;
+      brandCounts[brand] = (brandCounts[brand] || 0) + 1;
     });
 
-    const totalDevicesInCategory = categoryDevices.length;
     const percentages = {};
 
-    for (const brand in typeCounts) {
-      percentages[brand] = (typeCounts[brand] / totalDevicesInCategory) * 100;
+    for (const brand in brandCounts) {
+      percentages[brand] = (brandCounts[brand] / categoryDevices.length) * 100;
     }
 
     return percentages;
   },
 
-  countOwnerWithMostDevices() {
-    let owners = {};
-    deviceManager.getAllDevices().forEach((device) => {
-      if (device.owner in owners) {
-        owners[device.owner]++;
-      } else {
-        owners[device.owner] = 1;
-      }
+  countOwnerWithMostDevices: async function () {
+    const devices = await this.getDevices();
+    const owners = {};
+
+    devices.forEach((device) => {
+      const owner = device.owner;
+      owners[owner] = (owners[owner] || 0) + 1;
     });
 
     let maxOwner = "";
     let maxDevices = 0;
-    for (let owner in owners) {
+
+    for (const owner in owners) {
       if (owners[owner] > maxDevices) {
         maxDevices = owners[owner];
         maxOwner = owner;
