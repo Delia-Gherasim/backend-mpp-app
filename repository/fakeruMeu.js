@@ -19,7 +19,9 @@ module.exports = {
     let randomBrand = fakerEN_US.helpers.arrayElement(
       allBrands[randomCategory]
     );
-    let randomName = fakerEN_US.person.fullName();
+    let name = fakerEN_US.person.firstName();
+    let surname = fakerEN_US.person.lastName();
+    let randomName = name + " " + surname;
     let randomAccessories = fakerEN_US.datatype.boolean();
     let randomWarranty = fakerEN_US.datatype.boolean();
     let randomDate = fakerEN_US.date.past();
@@ -36,17 +38,24 @@ module.exports = {
     );
   },
   generateClient: function () {
-    let id=fakerEN_US.number.bigInt();
+    let id = fakerEN_US.number.bigInt();
     let name = fakerEN_US.person.firstName();
     let surname = fakerEN_US.person.lastName();
     let phoneNumber = faker.number
       .int({ min: 1000000000, max: 9999999999 })
       .toString();
-    let email = fakerEN_US.internet.email;
+    let specailChar = false;
+    let provider = "gmail.com";
+    let _email = fakerEN_US.internet.email({
+      name,
+      surname,
+      provider,
+      specailChar,
+    });
     let details = fakerEN_US.lorem.sentence();
-    let debt = fakerEN_US.number.int();
+    let debt = fakerEN_US.number.int({ min: 0, max: 1000 });
 
-    return new Client(id, name, surname, phoneNumber, email, debt, details);
+    return new Client(id, name, surname, phoneNumber, _email, debt, details);
   },
   startGeneratingDevices: function (callback) {
     setInterval(() => {

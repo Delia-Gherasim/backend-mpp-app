@@ -1,5 +1,7 @@
 const ClientsManager = require("../repository/clientManager");
 const clientManager = new ClientsManager();
+const DeviceManager = require("../repository/deviceManager");
+const deviceManager = new DeviceManager();
 
 module.exports = {
   getAll: async function () {
@@ -32,7 +34,7 @@ module.exports = {
 
   addClient: async function (client) {
     try {
-      await this.validateData(client); // Validate data
+      await this.validateData(client);
       const addedClient = await clientManager.addClient(client);
       return addedClient;
     } catch (error) {
@@ -58,5 +60,29 @@ module.exports = {
     }
 
     return true;
+  },
+  getDevicesOfClient: async function (client) {
+    try {
+      const actualClient = await clientManager.checkExistence(client);
+      if (!actualClient) {
+        throw new Error("Client does not exist");
+      }
+      const clientFullName = `${actualClient.getName().trim()} ${actualClient
+        .getSurname()
+        .trim()}`.toLowerCase();
+
+      const allDevices = await deviceManager.getAllDevices();
+      const devicesOfClient = allDevices.filter(
+        (device) => device.getOwner().toLowerCase().trim() === clientFullName
+      );
+
+      if (devicesOfClient.length > 0) {
+        return devicesOfClient;
+      } else {
+        return [];
+      }
+    } catch (error) {
+      throw new Error("Error fetching devices for client: " + error.message);
+    }
   },
 };

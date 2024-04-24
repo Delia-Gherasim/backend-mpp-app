@@ -17,13 +17,12 @@ router.post("/", async (req, res) => {
     const newItemData = req.body;
     const newItem = new Client(
       newItemData.id,
-      newItemData.category,
-      newItemData.type,
-      newItemData.brand,
-      newItemData.owner,
-      newItemData.accessories,
-      newItemData.warranty,
-      new Date(newItemData.date)
+      newItemData.name,
+      newItemData.surname,
+      newItemData.phoneNumber,
+      newItemData.email,
+      newItemData.debt,
+      newItemData.extraDetails
     );
     const result = await controller.addClient(newItem);
     res.json(result);
@@ -57,8 +56,7 @@ router
         newItemData.phoneNumber,
         newItemData.email,
         newItemData.debt,
-        newItemData.extraDetails,
-        new Date(newItemData.date)
+        newItemData.extraDetails
       );
       const result = await controller.updateClient(newItem);
       if (!result) {
@@ -83,5 +81,24 @@ router
       res.status(500).json({ error: error.message });
     }
   });
+router.post("/getDevicesOfClient", async (req, res) => {
+  //console.log("Received data:", req.body);
+  try {
+    const { name, surname, phoneNumber, email } = req.body;
+    const client = new Client(
+      null,
+      name,
+      surname,
+      phoneNumber,
+      email,
+      null,
+      null
+    );
+    const result = await controller.getDevicesOfClient(client);
+    res.json(result);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
 
 module.exports = router;
