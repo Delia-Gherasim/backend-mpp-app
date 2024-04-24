@@ -1,19 +1,23 @@
-const DeviceManager = require("../models/deviceManager");
-const PossibleTypes = require("../models/possibleType");
-
-const devices = new DeviceManager().getAllDevices();
+const DeviceManager = require("../repository/deviceManager");
+const deviceManager = new DeviceManager();
+//const controller = require("../controllers/crudController");
 module.exports = {
-  totalNumberOfitems: function () {
+  totalNumberOfItems: async function () {
+    const devices = await deviceManager.getAllDevices(); 
     return devices.length;
   },
-  getPagesOfNItems: function (numberOfItems, pageNumber) {
+  getPagesOfNItems: async function (numberOfItems, pageNumber) {
+    const devices = await deviceManager.getAllDevices();
+    //console.log("pagination controller:", devices); 
+    
     const startIndex = (pageNumber - 1) * numberOfItems;
     const endIndex = pageNumber * numberOfItems;
     const totalPages = Math.ceil(devices.length / numberOfItems);
     const currentPage = pageNumber;
 
-    const itemsForCurrentPage = devices.slice(startIndex, endIndex);
-
+    //console.log("start Index", startIndex, "endIndex:", endIndex, "totalPages", totalPages);
+    const itemsForCurrentPage = devices.slice(startIndex, endIndex); 
+    //console.log(itemsForCurrentPage);
     return {
       totalItems: devices.length,
       totalPages: totalPages,
@@ -21,7 +25,15 @@ module.exports = {
       items: itemsForCurrentPage,
     };
   },
-  getAllItems: function () {
-    return devices.getAllDevices();
+  getAllItems: async function () {
+    return await deviceManager.getAllDevices(); 
+  },
+  updatePaginationData: async function () {
+    const totalItems = await this.totalNumberOfItems(); 
+    const totalPages = Math.ceil(totalItems / 10);
+    return {
+      totalItems: totalItems,
+      totalPages: totalPages,
+    };
   },
 };
