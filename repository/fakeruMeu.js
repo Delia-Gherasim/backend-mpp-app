@@ -19,9 +19,7 @@ module.exports = {
     let randomBrand = fakerEN_US.helpers.arrayElement(
       allBrands[randomCategory]
     );
-    let name = fakerEN_US.person.firstName();
-    let surname = fakerEN_US.person.lastName();
-    let randomName = name + " " + surname;
+    let clientId = 0;
     let randomAccessories = fakerEN_US.datatype.boolean();
     let randomWarranty = fakerEN_US.datatype.boolean();
     let randomDate = fakerEN_US.date.past();
@@ -31,14 +29,14 @@ module.exports = {
       randomCategory,
       randomType,
       randomBrand,
-      randomName,
+      clientId,
       randomAccessories,
       randomWarranty,
       randomDate
     );
   },
   generateClient: function () {
-    let id = fakerEN_US.number.bigInt();
+    let id = fakerEN_US.number.int();
     let name = fakerEN_US.person.firstName();
     let surname = fakerEN_US.person.lastName();
     let phoneNumber = faker.number
@@ -57,24 +55,36 @@ module.exports = {
 
     return new Client(id, name, surname, phoneNumber, _email, debt, details);
   },
+  
   startGeneratingDevices: function (callback) {
-    setInterval(() => {
+    const validateDeviceOwnership = async (device) => {
+      const client = await clientController.getClientById(device.owner);
+      if (!client) {
+        throw new Error(`No client found with ID: ${device.owner}`);
+      }
+    };
+    setInterval(async () => {
       const newDevice1 = this.generateDevice();
       const newDevice2 = this.generateDevice();
       const newDevice3 = this.generateDevice();
       const newClient1 = this.generateClient();
       const newClient2 = this.generateClient();
-      const newClient3 = this.generateClient();
+  
       try {
-        Controller.addDevice(newDevice1);
-        Controller.addDevice(newDevice2);
-        Controller.addDevice(newDevice3);
-
-        clientController.addClient(newClient1);
-        clientController.addClient(newClient2);
-        clientController.addClient(newClient3);
-      } catch (Error) {}
-      callback([newDevice1, newDevice2, newDevice3]);
-    }, 500000);
-  },
-};
+        const addedClient1 = await clientController.addClient(newClient1);
+        const addedClient2 = await clientController.addClient(newClient2);
+        newDevice1.owner = addedClient1.id;
+        newDevice2.owner = addedClient1.id;
+        newDevice3.owner = addedClient1.id;
+        await validateDeviceOwnership(newDevice1);
+await validateDeviceOwnership(newDevice2);
+await validateDeviceOwnership(newDevice3);
+        await Controller.addDevice(newDevice1);
+        await Controller.addDevice(newDevice2);
+        await Controller.addDevice(newDevice3);
+        callback([newDevice1, newDevice2, newDevice3]);
+      } catch (error) {
+        console.error("Error while generating devices and clients:", error);
+      }
+    }, 999999)}
+  };

@@ -81,6 +81,17 @@ router.route("/:id")
     } catch (error) {
       res.status(500).json({ error: error.message }); 
     }
+  })
+  router.post("/getOwnerOfDevice", async (req, res) => {
+    try {
+      const { deviceId } = req.body;
+      const result = await controller.getOwnerData(deviceId);
+      res.json(result);
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
   });
+  
+  
 
 module.exports = router; 
