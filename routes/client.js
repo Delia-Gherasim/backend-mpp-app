@@ -3,12 +3,15 @@ const router = express.Router();
 const controller = require("../controllers/clientsController");
 const Client = require("../models/client");
 
-router.get("/", async (req, res) => {
+
+router.get("/", async (req, res, next) => {
   try {
-    const clients = await controller.getAll();
-    res.json(clients);
+    const nrOfItems = parseInt(req.query.nr) || 50;
+    const pageNr = parseInt(req.query.page) || 1;
+    const data = await controller.getPagesOfNItems(nrOfItems, pageNr); 
+    res.json(data); 
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error); 
   }
 });
 
@@ -95,6 +98,26 @@ router.post("/getDevicesOfClient", async (req, res) => {
       null
     );
     const result = await controller.getDevicesOfClient(client);
+    res.json(result);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+router.post("/getDataOfClient", async (req, res) => {
+  //console.log("Received data:", req.body);
+  try {
+    const { name, surname, phoneNumber, email } = req.body;
+    const client = new Client(
+      null,
+      name,
+      surname,
+      phoneNumber,
+      email,
+      null,
+      null
+    );
+    const result = await controller.getAllClientData(client);
     res.json(result);
   } catch (error) {
     res.status(400).json({ error: error.message });

@@ -4,6 +4,35 @@ const DeviceManager = require("../repository/deviceManager");
 const deviceManager = new DeviceManager();
 
 module.exports = {
+  totalNumberOfItems: async function () {
+    const clients = await clientManager.getAllClients();
+    return clients.length;
+  },
+  getPagesOfNItems: async function (numberOfItems, pageNumber) {
+    const clients = await clientManager.getAllClients();
+    
+    const startIndex = (pageNumber - 1) * numberOfItems;
+    const endIndex = pageNumber * numberOfItems;
+    const totalPages = Math.ceil(clients.length / numberOfItems);
+    const currentPage = pageNumber;
+
+    const itemsForCurrentPage = clients.slice(startIndex, endIndex); 
+
+    return {
+      totalItems: clients.length,
+      totalPages: totalPages,
+      currentPage: currentPage,
+      items: itemsForCurrentPage,
+    };
+  },
+  updatePaginationData: async function () {
+    const totalItems = await this.totalNumberOfItems(); 
+    const totalPages = Math.ceil(totalItems / 10);
+    return {
+      totalItems: totalItems,
+      totalPages: totalPages,
+    };
+  },
   getAll: async function () {
     try {
       const clients = await clientManager.getAllClients();
@@ -61,6 +90,18 @@ module.exports = {
 
     return true;
   },
+  getAllClientData: async function(client){
+    try {
+      const actualClient = await clientManager.checkExistence(client);
+      if (!actualClient) {
+        throw new Error("Client does not exist");
+      }
+    }catch (error) {
+      throw new Error("Error fetching devices for client: " + error.message);
+    }
+
+    return actualClient;
+  },
   getDevicesOfClient: async function (client) {
     try {
       const actualClient = await clientManager.checkExistence(client);
@@ -73,7 +114,7 @@ module.exports = {
 
       const allDevices = await deviceManager.getAllDevices();
       const devicesOfClient = allDevices.filter(
-        (device) => device.getOwner().toLowerCase().trim() === clientFullName
+        (device) => device.getOwner().toLowerCase().trim() == clientFullName
       );
 
       if (devicesOfClient.length > 0) {
