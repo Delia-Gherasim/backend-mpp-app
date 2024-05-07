@@ -98,6 +98,7 @@ router.post("/getDevicesOfClient", async (req, res) => {
       null
     );
     const result = await controller.getDevicesOfClient(client);
+    console.log("O GASIT: ", result);
     res.json(result);
   } catch (error) {
     res.status(400).json({ error: error.message });

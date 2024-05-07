@@ -84,7 +84,7 @@ router.route("/:id")
   })
   router.post("/getOwnerOfDevice", async (req, res) => {
     try {
-      const { deviceId } = req.body;
+      const  {deviceId } = req.body;
       const result = await controller.getOwnerData(deviceId);
       res.json(result);
     } catch (error) {

@@ -41,7 +41,6 @@ module.exports = {
       throw new Error("Error fetching clients: " + error.message);
     }
   },
-
   getClientById: async function (id) {
     try {
       const client = await clientManager.getClientById(id);
@@ -50,7 +49,6 @@ module.exports = {
       throw new Error("Error fetching client by ID: " + error.message);
     }
   },
-
   updateClient: async function (client) {
     try {
       await this.validateData(client);
@@ -60,7 +58,6 @@ module.exports = {
       throw new Error("Error updating client: " + error.message);
     }
   },
-
   addClient: async function (client) {
     try {
       await this.validateData(client);
@@ -70,7 +67,6 @@ module.exports = {
       throw new Error("Error adding client: " + error.message);
     }
   },
-
   deleteClientById: async function (id) {
     try {
       const deletedClient = await clientManager.deleteClientById(id);
@@ -79,7 +75,6 @@ module.exports = {
       throw new Error("Error deleting client: " + error.message);
     }
   },
-
   validateData: function (client) {
     if (!client.getName().trim()) {
       throw new Error("Name cannot be empty");
@@ -108,20 +103,11 @@ module.exports = {
       if (!actualClient) {
         throw new Error("Client does not exist");
       }
-      const clientFullName = `${actualClient.getName().trim()} ${actualClient
-        .getSurname()
-        .trim()}`.toLowerCase();
 
-      const allDevices = await deviceManager.getAllDevices();
-      const devicesOfClient = allDevices.filter(
-        (device) => device.getOwner().toLowerCase().trim() == clientFullName
-      );
+      const clientFullName = `${actualClient.name.trim()} ${actualClient.surname.trim()}`.toLowerCase();
+      const devicesOfClient = await deviceManager.getDevicesByOwner(clientFullName);
 
-      if (devicesOfClient.length > 0) {
-        return devicesOfClient;
-      } else {
-        return [];
-      }
+      return devicesOfClient;
     } catch (error) {
       throw new Error("Error fetching devices for client: " + error.message);
     }

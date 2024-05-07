@@ -57,12 +57,6 @@ module.exports = {
   },
   
   startGeneratingDevices: function (callback) {
-    const validateDeviceOwnership = async (device) => {
-      const client = await clientController.getClientById(device.owner);
-      if (!client) {
-        throw new Error(`No client found with ID: ${device.owner}`);
-      }
-    };
     setInterval(async () => {
       const newDevice1 = this.generateDevice();
       const newDevice2 = this.generateDevice();
@@ -73,12 +67,10 @@ module.exports = {
       try {
         const addedClient1 = await clientController.addClient(newClient1);
         const addedClient2 = await clientController.addClient(newClient2);
-        newDevice1.owner = addedClient1.id;
-        newDevice2.owner = addedClient1.id;
-        newDevice3.owner = addedClient1.id;
-        await validateDeviceOwnership(newDevice1);
-await validateDeviceOwnership(newDevice2);
-await validateDeviceOwnership(newDevice3);
+        newDevice1.owner = addedClient1.name+" "+addedClient1.surname;
+        newDevice2.owner = addedClient1.name+" "+addedClient1.surname;
+        newDevice3.owner = addedClient1.name+" "+addedClient1.surname;
+
         await Controller.addDevice(newDevice1);
         await Controller.addDevice(newDevice2);
         await Controller.addDevice(newDevice3);
@@ -86,5 +78,5 @@ await validateDeviceOwnership(newDevice3);
       } catch (error) {
         console.error("Error while generating devices and clients:", error);
       }
-    }, 999999)}
+    }, 100000000)}
   };

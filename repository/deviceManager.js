@@ -22,7 +22,6 @@ class DeviceManager {
       throw error;
     }
   }
-
   transformToDeviceArray(rawData) {
     if (!Array.isArray(rawData)) {
       //console.error("transformToDeviceArray received non-array input:", rawData);
@@ -103,7 +102,6 @@ class DeviceManager {
       throw new Error("Failed to fetch device: " + error.message);
     }
   }
-
   async deleteDeviceById(id) {
     const result = await this.collection.deleteOne({ id: id });
     if (result.deletedCount === 1) {
@@ -138,6 +136,14 @@ class DeviceManager {
     } catch (error) {
       console.error("Error updating device:", error);
       throw new Error("Error updating device: " + error.message);
+    }
+  }
+  async getDevicesByOwner(ownerName) {
+    try {
+      const devices = await this.collection.find({ owner: new RegExp(`^${ownerName}$`, 'i') });
+      return devices;
+    } catch (error) {
+      throw new Error("Error retrieving devices by owner: " + error.message);
     }
   }
 }

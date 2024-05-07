@@ -50,7 +50,6 @@ class ClientManager {
       throw new Error("Failed to fetch client: " + error.message);
     }
   }
-
   transformToClientArray(rawData) {
     if (!Array.isArray(rawData)) {
       //console.error("transformToClientArray received non-array input:", rawData);
@@ -110,7 +109,6 @@ class ClientManager {
       extraDetails
     );
   }
-
   async addClient(newClient) {
     try {
       await this.collection.insertOne(newClient);

@@ -12,17 +12,10 @@ const deviceManager = new DeviceManager();
 const clientManager = new ClientManager();
 
 module.exports = {
-  getOwnerName: async function () {
+  getOwnerData: async function (owner) {
     try {
-      const devices = await deviceManager.getAllDevices();
-      devices.forEach(
-        (device) =>
-          (device.owner =
-            clientManager.getClientById(device.getOwner()).getName() +
-            " " +
-            clientManager.getClientById(device.getOwner()).getSurname())
-      );
-      return devices;
+      const fullOwner = await clientManager.checkExistence(owner);
+      return fullOwner;
     } catch (error) {
       throw new Error("Error fetching devices: " + error.message);
     }
@@ -35,7 +28,6 @@ module.exports = {
       throw new Error("Error fetching devices: " + error.message);
     }
   },
-
   getDeviceById: async function (id) {
     try {
       const device = await deviceManager.getDeviceById(id);
@@ -44,7 +36,6 @@ module.exports = {
       throw new Error("Error fetching device by ID: " + error.message);
     }
   },
-
   updateDevice: async function (device) {
     try {
       await this.validateData(device);
@@ -54,7 +45,6 @@ module.exports = {
       throw new Error("Error updating device: " + error.message);
     }
   },
-
   addDevice: async function (device) {
     try {
       await this.validateData(device);
@@ -64,7 +54,6 @@ module.exports = {
       throw new Error("Error adding device: " + error.message);
     }
   },
-
   deleteDeviceById: async function (id) {
     try {
       const deletedDevice = await deviceManager.deleteDeviceById(id);
@@ -73,7 +62,6 @@ module.exports = {
       throw new Error("Error deleting device: " + error.message);
     }
   },
-
   validateData: function (device) {
     console.log(device);
     if (
