@@ -30,6 +30,9 @@ app.use("/brands", brandsRouter);
 const clientRouter = require("./routes/client");
 app.use("/client", clientRouter);
 
+const userRouter = require("./routes/users");
+app.use("/user", userRouter);
+
 app.get("/", (req, res) => {
   res.send("Hello from the backend server!");
 });

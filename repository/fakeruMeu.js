@@ -75,6 +75,6 @@ module.exports = {
         clientController.addClient(newClient3);
       } catch (Error) {}
       callback([newDevice1, newDevice2, newDevice3]);
-    }, 500000);
+    }, 50000000);
   },
 };
