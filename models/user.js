@@ -42,6 +42,6 @@ class User {
   }
   setPosition(newPosition) {
     this.position = newPosition;
-  }
+  }  
 }
 module.exports = User;
