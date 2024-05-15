@@ -7,10 +7,14 @@ const session = require("express-session");
 const User = require('../models/user');
 
 const verifyToken = (req, res, next) => {
-  if (!req.session.user || !req.session.user.token) {
+  
+  const header = req.headers.authorization;
+  if(!header || !header.startsWith("Bearer ")){
+    console.log("NU");
     return res.status(401).json({ error: "Access denied. No token provided." });
   }
-  const token = req.session.user.token;
+
+  const token = header.split(" ")[1];
   try {
     const decoded = jwt.verify(token, secretKey);
     req.user = decoded;
@@ -119,7 +123,7 @@ router.route("/:id")
   })
   .delete(verifyToken, async (req, res) => {
     try {
-      const id = Number(req.params.id);
+      const id = req.params.id;
       const result = await controller.deleteUserById(id);
 
       if (!result) {
