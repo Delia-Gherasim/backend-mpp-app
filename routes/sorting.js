@@ -8,19 +8,19 @@ router.get("/", (req, res) => {
 
 router.get("/type", async (req, res) => {
   try {
-    const result = await controller.sortByTypeAscending(); // If this method involves async operations
-    res.json(result); // Use res.json for a consistent response format
+    const result = await controller.sortByTypeAscending(); 
+    res.json(result); 
   } catch (error) {
-    res.status(500).json({ error: error.message }); // Proper error handling
+    res.status(500).json({ error: error.message }); 
   }
 });
 
 router.get("/category", async (req, res) => {
   try {
     const result = await controller.sortByCategoryAscending();
-    res.json(result); // Use res.json for JSON output
+    res.json(result); 
   } catch (error) {
-    res.status(500).json({ error: error.message }); // Handle any errors
+    res.status(500).json({ error: error.message }); 
   }
 });
 

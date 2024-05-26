@@ -116,7 +116,6 @@ class UserManager {
       throw new Error("Error updating user: " + error.message);
     }
   }
-
  
 }
 

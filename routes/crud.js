@@ -12,7 +12,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// Add a new device
+
 router.post("/", async (req, res) => {
   try {
     const newItemData = req.body; 
