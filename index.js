@@ -46,7 +46,7 @@ const wss = new WebSocket.Server({
         }
       });
     });
-    console.log(`Server is running on http://localhost:${port}`);
+    console.log(`Server is running on http://localhost:${port} hello`);
   }),
 });
 
